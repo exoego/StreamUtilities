@@ -1,0 +1,49 @@
+*.class
+*.pydevproject
+.project
+.metadata
+bin/**
+out/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+#Mac
+.DS_Store
+
+# Java Package Files #
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/*
+.javadoc/*
+*.iml
+
+# OS
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+/bin/
