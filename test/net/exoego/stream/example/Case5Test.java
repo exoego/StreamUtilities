@@ -3,7 +3,9 @@ package net.exoego.stream.example;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
@@ -25,26 +27,28 @@ public class Case5Test {
                    .entrySet()
                    .stream()
                    .sorted(comparingLong(Entry::getValue))
-                   .<Dept>map(Entry::getKey)
+                   .map(e -> e.getKey())
                    .collect(toList());
     }
 
     List<Dept> sortDept2(List<Emp> list) {
-        Collector<Emp, ?, Stream<Entry<Dept, Long>>> collector = //
-                collectingAndThen(groupingBy(Emp::dept, counting()), m -> m.entrySet().stream());
+        Map<Dept, Long> map = list.stream().collect(groupingBy(Emp::dept, counting()));
 
-        return list.stream()
-                   .collect(collector)
-                   .sorted(comparingLong(Entry::getValue))
-                   .<Dept>map(Entry::getKey)
-                   .collect(toList());
+        return map.entrySet()
+                  .stream()
+                  .sorted(Comparator.comparingLong(Entry::getValue))
+                  .map(e -> e.getKey())
+                  .collect(toList());
     }
 
     List<Dept> sortDept3(List<Emp> list) {
+        Collector<Emp, ?, Stream<Entry<Dept, Long>>> groupThenStream = collectingAndThen(groupingBy(Emp::dept,
+                                                                                                    counting()),
+                                                                                         m -> m.entrySet().stream());
         return list.stream()
-                   .collect(toGroupedEntries(Emp::dept, counting()))
-                   .sorted(comparingLong(Entry::getValue))
-                   .<Dept>map(Entry::getKey)
+                   .collect(groupThenStream)
+                   .sorted(comparingLong(e -> e.getValue()))
+                   .map(e -> e.getKey())
                    .collect(toList());
     }
 
@@ -52,10 +56,18 @@ public class Case5Test {
         return list.stream()
                    .collect(toGroupedEntries(Emp::dept, counting()))
                    .sorted(comparingLong(Entry::getValue))
-                   .collect(mapping(Entry::getKey, toList()));
+                   .map(e -> e.getKey())
+                   .collect(toList());
     }
 
     List<Dept> sortDept5(List<Emp> list) {
+        return list.stream()
+                   .collect(toGroupedEntries(Emp::dept, counting()))
+                   .sorted(comparingLong(Entry::getValue))
+                   .collect(mapping(Entry::getKey, toList()));
+    }
+
+    List<Dept> sortDept6(List<Emp> list) {
         return list.stream()
                    .collect(toGroupedEntries(Emp::dept, counting()))
                    .sorted(comparingLong(Entry::getValue))

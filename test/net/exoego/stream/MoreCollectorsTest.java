@@ -32,22 +32,22 @@ public class MoreCollectorsTest {
 
         @Test
         public void use_case_difference_between_ToListMapped_and_ToList() {
-            List<String> src = asList("a", "on", "cat", "tri", "by");
-            Function<String, String> bracket = s -> "<" + s + ">";
+            List<String> src = asList("a   @  on@ cat @tri @by".split("@"));
 
             Map<Integer, List<String>> mapThenCollect = src.stream()
-                                                           .map(bracket)
-                                                           .collect(groupingBy((String s) -> s.length(), toList()));
-            assertThat(mapThenCollect.get(3), is(asList("<a>")));
-            assertThat(mapThenCollect.get(4), is(asList("<on>", "<by>")));
-            assertThat(mapThenCollect.get(5), is(asList("<cat>", "<tri>")));
+                                                           .map(s -> s.trim())
+                                                           .collect(groupingBy(s -> s.length(), toList()));
+            assertThat(mapThenCollect.get(1), is(asList("a")));
+            assertThat(mapThenCollect.get(2), is(asList("on", "by")));
+            assertThat(mapThenCollect.get(3), is(asList("cat", "tri")));
 
             Map<Integer, List<String>> mapWhileCollecting = src.stream()
-                                                               .collect(groupingBy(String::length,
-                                                                                   toListMapped(bracket)));
-            assertThat(mapWhileCollecting.get(1), is(asList("<a>")));
-            assertThat(mapWhileCollecting.get(2), is(asList("<on>", "<by>")));
-            assertThat(mapWhileCollecting.get(3), is(asList("<cat>", "<tri>")));
+                                                               .collect(groupingBy(s -> s.length(),
+                                                                                   toListMapped(s -> s.trim())));
+            assertThat(mapWhileCollecting.get(2), is(asList("by")));
+            assertThat(mapWhileCollecting.get(3), is(nullValue()));
+            assertThat(mapWhileCollecting.get(4), is(asList("a", "on", "tri")));
+            assertThat(mapWhileCollecting.get(5), is(asList("cat")));
         }
 
         @Test(expected = NullPointerException.class)

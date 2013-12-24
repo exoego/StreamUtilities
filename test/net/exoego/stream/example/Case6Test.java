@@ -10,7 +10,6 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import net.exoego.stream.MoreCollectors;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,9 +48,17 @@ public class Case6Test {
     }
 
     Map<Dept, Long> groupByDeptAndFilter1_2(List<Emp> list) {
+        Collector<Emp, ?, Long> countHighSalary = collectingAndThen(toStream(),
+                                                                    emps -> emps.filter(e -> e.salary() > 1000)
+                                                                                .count());
+        return list.stream().collect(groupingBy(Emp::dept, countHighSalary));
+    }
+
+    Map<Dept, Long> groupByDeptAndFilter1_3(List<Emp> list) {
         return list.stream()
                    .collect(groupingBy(Emp::dept,
-                                       toStreamThen((Stream<Emp> s) -> s.filter(e -> e.salary() > 1000).count())));
+                                       toStreamThen((Stream<Emp> emps) -> emps.filter(e -> e.salary() > 1000)
+                                                                              .count())));
     }
 
     Map<Dept, Long> groupByDeptAndFilter2(List<Emp> list) {
@@ -68,7 +75,7 @@ public class Case6Test {
 
     Map<Dept, Long> groupByDeptAndFilter2_2(List<Emp> list) {
         return list.stream()
-                   .collect(toGroupedEntries(Emp::dept))
+                   .collect(toGroupedEntries(Emp::dept, toList()))
                    .collect(Collectors.toMap(entry -> entry.getKey(),
                                              entry -> entry.getValue()
                                                            .stream()
@@ -81,7 +88,7 @@ public class Case6Test {
                    .collect(toGroupedEntries(Emp::dept,
                                              toStreamThen((Stream<Emp> s) -> s.filter(emp -> emp.salary() > 1000)
                                                                               .count())))
-                   .collect(MoreCollectors.toMapFromEntry());
+                   .collect(toMap(entry -> entry.getKey(), entry -> entry.getValue()));
     }
 
     Map<Dept, Long> groupByDeptAndFilter2_4(List<Emp> list) {
@@ -142,18 +149,24 @@ public class Case6Test {
 
     @Test
     public void iteration5() {
-        Map<Dept, Long> highSalaryCountPerDept = groupByDeptAndFilter2_2(EMPLOYEES);
+        Map<Dept, Long> highSalaryCountPerDept = groupByDeptAndFilter1_3(EMPLOYEES);
         expect(highSalaryCountPerDept);
     }
 
     @Test
     public void iteration6() {
-        Map<Dept, Long> highSalaryCountPerDept = groupByDeptAndFilter2_3(EMPLOYEES);
+        Map<Dept, Long> highSalaryCountPerDept = groupByDeptAndFilter2_2(EMPLOYEES);
         expect(highSalaryCountPerDept);
     }
 
     @Test
     public void iteration7() {
+        Map<Dept, Long> highSalaryCountPerDept = groupByDeptAndFilter2_3(EMPLOYEES);
+        expect(highSalaryCountPerDept);
+    }
+
+    @Test
+    public void iteration8() {
         Map<Dept, Long> highSalaryCountPerDept = groupByDeptAndFilter2_4(EMPLOYEES);
         expect(highSalaryCountPerDept);
     }
