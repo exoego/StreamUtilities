@@ -36,14 +36,14 @@ public class MoreCollectorsTest {
 
             Map<Integer, List<String>> mapThenCollect = src.stream()
                                                            .map(s -> s.trim())
-                                                           .collect(groupingBy(s -> s.length(), toList()));
+                                                           .collect(groupingBy((String s) -> s.length(), toList()));
             assertThat(mapThenCollect.get(1), is(asList("a")));
             assertThat(mapThenCollect.get(2), is(asList("on", "by")));
             assertThat(mapThenCollect.get(3), is(asList("cat", "tri")));
 
             Map<Integer, List<String>> mapWhileCollecting = src.stream()
                                                                .collect(groupingBy(s -> s.length(),
-                                                                                   toListMapped(s -> s.trim())));
+                                                                                   toListMapped(String::trim)));
             assertThat(mapWhileCollecting.get(2), is(asList("by")));
             assertThat(mapWhileCollecting.get(3), is(nullValue()));
             assertThat(mapWhileCollecting.get(4), is(asList("a", "on", "tri")));
