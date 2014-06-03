@@ -224,5 +224,12 @@ public class MoreCollectorsTest {
             Stream<String> filtered = mixed.stream().collect(ofType(String.class));
             assertThat(filtered.collect(toList()), is(asList("one", "three")));
         }
+
+        @Test
+        public void OfType_collector_also_should_be_applied_to_Stream_of_not_only_Object_but_also_any_type() {
+            List<Number> mixed = asList(0, 0.5, 0.3f, 2, 1L, 4L, -1);
+            Stream<Integer> filtered = mixed.stream().collect(ofType(Integer.class));
+            assertThat(filtered.collect(toList()), is(asList(0, 2, -1)));
+        }
     }
 }
