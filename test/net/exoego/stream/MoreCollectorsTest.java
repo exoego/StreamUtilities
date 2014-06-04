@@ -116,8 +116,7 @@ public class MoreCollectorsTest {
             Map<Integer, Long> map = split.stream()
                                           .collect(groupingBy(String::length,
                                                               toStreamThen((Stream<String> s) -> s.filter(e -> e.contains(
-                                                                      "o")).count())
-                                                             ));
+                                                                      "o")).count())));
             assertThat(map.get(2), is(nullValue()));
             assertThat(map.get(3), is(2L)); // fox, dog
             assertThat(map.get(4), is(1L)); // over
@@ -160,8 +159,7 @@ public class MoreCollectorsTest {
             Map<Integer, Long> map = src.stream()
                                         .collect(toGroupedEntries(String::length,
                                                                   toStreamThen(s -> s.filter(e -> e.contains("i"))
-                                                                                     .count())
-                                                                 ))
+                                                                                     .count())))
                                         .collect(toMap(Entry::getKey, Entry::getValue));
             assertThat(map.get(2), is(nullValue()));
             assertThat(map.get(3), is(1L)); // six
@@ -186,8 +184,7 @@ public class MoreCollectorsTest {
             assertThat(result,
                        is(asList(asList("3", "one", "two", "six"),
                                  asList("4", "zero", "four", "five"),
-                                 asList("5", "three")))
-                      );
+                                 asList("5", "three"))));
         }
 
         @Test
@@ -199,8 +196,7 @@ public class MoreCollectorsTest {
             assertThat(result,
                        is(asList(asList("3", "one", "two", "six"),
                                  asList("4", "zero", "four", "five"),
-                                 asList("5", "three")))
-                      );
+                                 asList("5", "three"))));
         }
 
         @Test
@@ -214,22 +210,7 @@ public class MoreCollectorsTest {
             assertThat(result,
                        is(asList(asList("3", "one!", "two!", "six!"),
                                  asList("4", "zero!", "four!", "five!"),
-                                 asList("5", "three!")))
-                      );
-        }
-
-        @Test
-        public void OfType_collector_extracts_element_that_is_instance_of_given_class_then_maps_element_to_the_class() {
-            List<Object> mixed = asList(0, "one", 0.5, "three", new int[]{3}, new String[]{"a"});
-            Stream<String> filtered = mixed.stream().collect(ofType(String.class));
-            assertThat(filtered.collect(toList()), is(asList("one", "three")));
-        }
-
-        @Test
-        public void OfType_collector_also_should_be_applied_to_Stream_of_not_only_Object_but_also_any_type() {
-            List<Number> mixed = asList(0, 0.5, 0.3f, 2, 1L, 4L, -1);
-            Stream<Integer> filtered = mixed.stream().collect(ofType(Integer.class));
-            assertThat(filtered.collect(toList()), is(asList(0, 2, -1)));
+                                 asList("5", "three!"))));
         }
     }
 }

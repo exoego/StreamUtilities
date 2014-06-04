@@ -114,8 +114,7 @@ public final class MoreCollectors {
                                 r.build().forEach(l::accept);
                                 return l;
                             },
-                            DoubleStream.Builder::build
-                           );
+                            DoubleStream.Builder::build);
     }
 
     private static <T, K, A, V, M extends Map<K, V>> Collector<T, ?, Stream<Entry<K, V>>> toGroupedEntries(
@@ -164,25 +163,5 @@ public final class MoreCollectors {
     public static <T, K, R> Collector<T, ?, Stream<R>> groupingThenStreaming(
             final Function<? super T, ? extends K> keyMapper, final BiFunction<? super K, List<T>, R> finisher) {
         return groupingThenStreaming(keyMapper, Collectors.toList(), finisher);
-    }
-
-    /**
-     * <p>Returns a {@code Collector} that filters elements based on the given type and maps the matched elements to the type.</p>
-     *
-     * @param givenType a Class instance to filter stream.
-     * @return a {@code Collector} that filters elements based on the given type and maps the matched elements to the type.
-     * @throws java.lang.NullPointerException if {@code givenType} is null
-     */
-    public static <T> Collector<? super Object, ?, Stream<T>> ofType(final Class<? extends T> givenType) {
-        Objects.requireNonNull(givenType, "givenType is null");
-        return Collector.of(Stream::builder, (builder, e) -> {
-            if (givenType.isInstance(e)) {
-                final T cast = givenType.cast(e);
-                builder.accept(cast);
-            }
-        }, (left, right) -> {
-            right.build().forEach(left::accept);
-            return left;
-        }, (Stream.Builder<T> builder) -> (builder.build()));
     }
 }

@@ -52,6 +52,23 @@ public final class FlatMappers {
         return e -> iterator.hasNext() ? LongStream.of(biMapper.applyAsLong(e, iterator.next())) : LongStream.empty();
     }
 
+    /**
+     * <p>Returns a {@code Function} that returns a stream of an element if the element is instance of
+     * {@code givenType}, otherwise an empty sequence.</p>
+     * <pre class="java">Example:
+     * <code class="java">Stream&lt;Number&gt; mixed = ...;
+     * Stream&lt;BigInteger&gt; filtered = mixed.flatMap(ofType(BigInteger.class));</code></pre>
+     *
+     * @param givenType a Class instance to filter stream.
+     * @return a {@code Function} that returns a stream of an element if the element is instance of
+     * {@code givenType}, otherwise an empty sequence.</p>
+     * @throws java.lang.NullPointerException if {@code givenType} is null
+     */
+    public static <T> Function<? super Object, Stream<T>> ofType(final Class<T> givenType) {
+        Objects.requireNonNull(givenType, "givenType is null");
+        return e -> givenType.isInstance(e) ? Stream.of(givenType.cast(e)) : Stream.empty();
+    }
+
     public static DoubleFunction<DoubleStream> zipper(final DoubleStream second, final DoubleBinaryOperator biMapper) {
         Objects.requireNonNull(second, "second is null");
         Objects.requireNonNull(biMapper, "biMapper is null");

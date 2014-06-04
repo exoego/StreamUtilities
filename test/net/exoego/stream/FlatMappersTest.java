@@ -1,5 +1,6 @@
 package net.exoego.stream;
 
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.DoubleFunction;
@@ -17,6 +18,8 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -291,6 +294,25 @@ public class FlatMappersTest {
         public void fail_fast_if_null_mapper() {
             DoubleBinaryOperator func = null;
             FlatMappers.zipper(DoubleStream.empty(), func);
+        }
+
+        @Test
+        public void OfType_extracts_maps_element_to_a_sequence_of_it_if_it_is_instanceof_given_type() {
+            List<Object> mixed = asList(0, "one", 0.5, "three", new int[]{3}, new String[]{"a"});
+            Stream<String> filtered = mixed.stream().flatMap(FlatMappers.ofType(String.class));
+            assertThat(filtered.collect(toList()), is(asList("one", "three")));
+        }
+
+        @Test
+        public void OfType_also_should_be_applied_to_Stream_of_not_only_Object_but_also_any_type() {
+            List<Number> mixed = asList(0, 0.5, 0.3f, 2, 1L, 4L, -1);
+            Stream<Integer> filtered = mixed.stream().flatMap(FlatMappers.ofType(Integer.class));
+            assertThat(filtered.collect(toList()), is(asList(0, 2, -1)));
+        }
+
+        @Test(expected = NullPointerException.class)
+        public void OfType_fail_fast_if_null() {
+            FlatMappers.ofType(null);
         }
     }
 }
